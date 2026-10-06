@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- An admin panel must never be indexed, even if the subdomain leaks. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Arova Labs — Admin</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      /*
+       * Theme applied before first paint. Without this the app renders light,
+       * then snaps to dark once React mounts — a visible flash on every load.
+       *
+       * Three states: 'light', 'dark', 'system'. 'system' is left on the element
+       * as-is rather than resolved to a concrete value, because the stylesheet
+       * handles it with a prefers-color-scheme query — so the OS switching theme
+       * mid-session is picked up by CSS with no JavaScript involved.
+       *
+       * localStorage can throw (private mode, blocked site data), so the whole
+       * thing is guarded and falls back to following the OS.
+       */
+      try {
+        var stored = localStorage.getItem('arova-admin-theme');
+        document.documentElement.dataset.theme =
+          stored === 'light' || stored === 'dark' ? stored : 'system';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'system';
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

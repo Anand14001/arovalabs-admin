@@ -1,0 +1,216 @@
+@import 'tailwindcss';
+
+/*
+ * Theme tokens.
+ *
+ * The brand palette is shared with the website (website/src/index.css) so the
+ * two never drift: teal, orange, warm near-black, Inter throughout.
+ *
+ * The admin adds a surface scale on top. An admin panel is dense — tables,
+ * forms, sidebars — and needs more than "white or not white" to separate a
+ * page from a card from a table header. Those surfaces are the only tokens
+ * that change between light and dark, which keeps the dark theme honest: it is
+ * a palette swap, not a second design.
+ */
+@theme {
+  --color-brand: #2b7e83;
+  --color-brand-dark: #1f5f63;
+  --color-brand-light: #e8f2f3;
+  --color-accent: #ef8a06;
+  --color-accent-dark: #d77a05;
+
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #be123c;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -16px rgb(15 23 42 / 0.16);
+  --shadow-pop: 0 4px 12px -4px rgb(15 23 42 / 0.12), 0 24px 48px -24px rgb(15 23 42 / 0.28);
+}
+
+/*
+ * Surfaces and text, as CSS variables rather than @theme colours, because they
+ * are redefined per theme. `data-theme` is set by the inline script in
+ * index.html before first paint.
+ */
+:root,
+:root[data-theme='light'] {
+  --surface-page: #f6f7f9;
+  --surface-card: #ffffff;
+  --surface-sunken: #f1f3f6;
+  --surface-hover: #f1f5f9;
+  --surface-inverse: #10211f;
+
+  --text-strong: #0f172a;
+  --text-base: #475569;
+  --text-muted: #94a3b8;
+
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+}
+
+:root[data-theme='dark'] {
+  --surface-page: #0c1116;
+  --surface-card: #141b22;
+  --surface-sunken: #10171d;
+  --surface-hover: #1b242d;
+  --surface-inverse: #e8f2f3;
+
+  --text-strong: #eef2f6;
+  --text-base: #a3b2c2;
+  --text-muted: #6b7f91;
+
+  --line: #222d38;
+  --line-strong: #2d3a47;
+}
+
+/* Honour the OS preference when nothing has been chosen explicitly. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --surface-page: #0c1116;
+    --surface-card: #141b22;
+    --surface-sunken: #10171d;
+    --surface-hover: #1b242d;
+    --surface-inverse: #e8f2f3;
+
+    --text-strong: #eef2f6;
+    --text-base: #a3b2c2;
+    --text-muted: #6b7f91;
+
+    --line: #222d38;
+    --line-strong: #2d3a47;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light dark;
+  }
+
+  body {
+    @apply font-sans text-[14px] leading-relaxed antialiased;
+    background: var(--surface-page);
+    color: var(--text-base);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--text-strong);
+    @apply font-semibold;
+    text-wrap: balance;
+  }
+
+  /*
+   * Numerals in tables and totals must line up column to column. Inter's
+   * default figures are proportional, so prices jitter without this.
+   */
+  table,
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-brand);
+    color: white;
+  }
+}
+
+@layer components {
+  .surface {
+    background: var(--surface-card);
+    border: 1px solid var(--line);
+    @apply rounded-xl;
+  }
+
+  .card {
+    background: var(--surface-card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-card);
+    @apply rounded-xl;
+  }
+
+  .label {
+    color: var(--text-strong);
+    @apply block text-[13px] font-medium;
+  }
+
+  .input {
+    background: var(--surface-card);
+    border: 1px solid var(--line-strong);
+    color: var(--text-strong);
+    @apply w-full rounded-lg px-3 py-2.5 text-[14px] transition;
+  }
+
+  .input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .input:focus {
+    border-color: var(--color-brand);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
+  }
+
+  .input[aria-invalid='true'] {
+    border-color: var(--color-danger);
+  }
+
+  .input[aria-invalid='true']:focus {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 18%, transparent);
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5
+      text-[14px] font-medium transition disabled:cursor-not-allowed disabled:opacity-55;
+  }
+
+  .btn-primary {
+    background: var(--color-brand);
+    @apply text-white;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-brand-dark);
+  }
+
+  .btn-ghost {
+    color: var(--text-base);
+    @apply bg-transparent;
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--surface-hover);
+    color: var(--text-strong);
+  }
+
+  .btn-outline {
+    border: 1px solid var(--line-strong);
+    color: var(--text-strong);
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    background: var(--surface-hover);
+  }
+}
+
+@layer utilities {
+  .text-strong {
+    color: var(--text-strong);
+  }
+  .text-muted {
+    color: var(--text-muted);
+  }
+}
