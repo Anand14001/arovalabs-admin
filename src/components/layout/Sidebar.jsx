@@ -8,10 +8,14 @@
  */
 
 import { NavLink } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
+  Activity,
   BadgePercent,
   Building2,
   ClipboardList,
+  CircleSlash2,
+  Database,
   FileText,
   FlaskConical,
   Gauge,
@@ -28,7 +32,7 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react';
-import Logo from '../ui/Logo';
+import { health } from '../../lib/api';
 
 const SECTIONS = [
   {
@@ -48,8 +52,8 @@ const SECTIONS = [
       { to: '/orders', label: 'Orders', icon: Package },
       { to: '/reports', label: 'Lab reports', icon: FileText },
       { to: '/prescriptions', label: 'Prescriptions', icon: ClipboardList },
-      { to: '/centers', label: 'Centres & slots', icon: Building2, soon: true },
-      { to: '/coupons', label: 'Coupons', icon: BadgePercent, soon: true },
+      { to: '/centers', label: 'Centres', icon: Building2 },
+      { to: '/coupons', label: 'Coupons', icon: BadgePercent },
     ],
   },
   {
@@ -63,18 +67,20 @@ const SECTIONS = [
   {
     title: 'Enquiries',
     items: [
-      { to: '/leads', label: 'Messages', icon: Inbox, soon: true },
-      { to: '/subscribers', label: 'Newsletter', icon: Mail, soon: true },
+      { to: '/leads', label: 'Messages', icon: Inbox },
     ],
   },
-  {
-    title: 'System',
-    items: [
-      { to: '/settings', label: 'Settings', icon: Settings, soon: true },
-      { to: '/users', label: 'Admin users', icon: Users, soon: true },
-      { to: '/audit', label: 'Audit log', icon: ShieldCheck, soon: true },
-    ],
-  },
+  /*
+   * Reserved for later phases:
+   * {
+   *   title: 'System',
+   *   items: [
+   *     { to: '/settings', label: 'Settings', icon: Settings },
+   *     { to: '/users', label: 'Admin users', icon: Users },
+   *     { to: '/audit', label: 'Audit log', icon: ShieldCheck },
+   *   ],
+   * },
+   */
 ];
 
 function Item({ item, onNavigate }) {
@@ -121,16 +127,22 @@ function Item({ item, onNavigate }) {
 }
 
 export default function Sidebar({ onNavigate }) {
+  const { isLoading, isError } = useQuery({
+    queryKey: ['health', 'ready'],
+    queryFn: health.ready,
+    refetchInterval: 60_000,
+    retry: false,
+  });
+  const StatusIcon = isLoading ? Activity : isError ? CircleSlash2 : Database;
+  const status = isLoading ? 'Checking connection…' : isError ? 'Connection unavailable' : 'Database connected';
+  const statusColor = isLoading ? 'var(--text-muted)' : isError ? 'var(--color-danger)' : 'var(--color-success)';
+
   return (
     <nav
       aria-label="Main"
       className="flex h-full flex-col gap-1 overflow-y-auto p-3"
       style={{ background: 'var(--surface-card)' }}
     >
-      <div className="px-1.5 py-2">
-        <Logo />
-      </div>
-
       <div className="mt-1 flex-1 space-y-4">
         {SECTIONS.map((section, i) => (
           <div key={section.title ?? i}>
@@ -146,6 +158,10 @@ export default function Sidebar({ onNavigate }) {
             </div>
           </div>
         ))}
+      </div>
+      <div className="mt-3 flex items-center gap-2 border-t px-2.5 pt-3 text-[12px] font-medium" style={{ color: statusColor }} role="status" aria-live="polite">
+        <StatusIcon className={`size-3.5 shrink-0 ${isLoading ? 'animate-pulse' : ''}`} aria-hidden="true" />
+        <span>{status}</span>
       </div>
     </nav>
   );

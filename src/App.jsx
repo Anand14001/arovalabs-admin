@@ -20,6 +20,9 @@ import PostList from './pages/content/PostList';
 import PostEditor from './pages/content/PostEditor';
 import ContentBlocks from './pages/content/ContentBlocks';
 import Navigation from './pages/content/Navigation';
+import Leads from './pages/leads/Leads';
+import Coupons from './pages/coupons/Coupons';
+import Centers from './pages/centers/Centers';
 
 function FullScreenLoader() {
   return (
@@ -105,11 +108,14 @@ export default function App() {
         <Route path="/orders/:id" element={<OrderDetail />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/prescriptions" element={<Prescriptions />} />
+        <Route path="/centers" element={<Centers />} />
+        <Route path="/coupons" element={<Coupons />} />
         <Route path="/posts" element={<PostList />} />
         {/* "new" is handled inside the editor, so both paths share one screen. */}
         <Route path="/posts/:id" element={<PostEditor />} />
         <Route path="/content-blocks" element={<ContentBlocks />} />
         <Route path="/navigation" element={<Navigation />} />
+        <Route path="/leads" element={<Leads />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/media" element={<Media />} />
         <Route path="/account" element={<Account />} />

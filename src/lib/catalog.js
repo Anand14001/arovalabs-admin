@@ -280,3 +280,58 @@ export const CONTENT_STATUS = {
   PUBLISHED: { label: 'Published', tone: 'success' },
   ARCHIVED: { label: 'Archived', tone: 'neutral' },
 };
+
+export const LEAD_STATUS = {
+  NEW: { label: 'New', tone: 'brand' },
+  IN_PROGRESS: { label: 'In Progress', tone: 'warning' },
+  RESOLVED: { label: 'Resolved', tone: 'success' },
+  SPAM: { label: 'Spam', tone: 'danger' },
+};
+
+export const leads = {
+  list: (params) => api.get(`/admin/leads/messages${qs(params)}`),
+  counts: () => api.get('/admin/leads/messages/counts'),
+  update: (id, body) => api.patch(`/admin/leads/messages/${id}`, body),
+};
+
+export const leadKeys = {
+  all: ['leads'],
+  list: (filters) => ['leads', 'list', filters],
+  counts: () => ['leads', 'counts'],
+};
+
+export const COUPON_STATUS = {
+  ACTIVE: { label: 'Active', tone: 'success' },
+  UPCOMING: { label: 'Upcoming', tone: 'brand' },
+  EXPIRED: { label: 'Expired', tone: 'neutral' },
+  DEPLETED: { label: 'Fully Used', tone: 'warning' },
+  INACTIVE: { label: 'Disabled', tone: 'danger' },
+};
+
+export const coupons = {
+  list: (params) => api.get(`/admin/coupons${qs(params)}`),
+  get: (id) => api.get(`/admin/coupons/${id}`),
+  create: (body) => api.post('/admin/coupons', body),
+  update: (id, body) => api.patch(`/admin/coupons/${id}`, body),
+  delete: (id) => api.del(`/admin/coupons/${id}`),
+};
+
+export const couponKeys = {
+  all: ['coupons'],
+  list: (filters) => ['coupons', 'list', filters],
+  detail: (id) => ['coupons', 'detail', id],
+};
+
+export const centers = {
+  list: (params) => api.get(`/admin/centers${qs(params)}`),
+  get: (id) => api.get(`/admin/centers/${id}`),
+  create: (body) => api.post('/admin/centers', body),
+  update: (id, body) => api.patch(`/admin/centers/${id}`, body),
+  delete: (id) => api.del(`/admin/centers/${id}`),
+};
+
+export const centerKeys = {
+  all: ['centers'],
+  list: (filters) => ['centers', 'list', filters],
+  detail: (id) => ['centers', 'detail', id],
+};

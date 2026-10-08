@@ -49,7 +49,7 @@ function UserMenu() {
         >
           {user?.name?.charAt(0)?.toUpperCase() ?? 'A'}
         </span>
-        <span className="hidden max-w-[12ch] truncate font-medium text-strong sm:block">
+        <span className="admin-user-name hidden max-w-[12ch] truncate font-medium text-strong sm:block">
           {user?.name}
         </span>
         <ChevronDown className="size-3.5 text-muted" aria-hidden="true" />
@@ -99,35 +99,14 @@ export default function AdminLayout() {
   useEffect(() => setDrawerOpen(false), [pathname]);
 
   return (
-    <div className="min-h-dvh lg:grid lg:grid-cols-[256px_1fr]">
-      {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-dvh border-r lg:block">
-        <Sidebar />
-      </aside>
-
-      {/* Mobile drawer */}
-      {drawerOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            aria-label="Close navigation"
-            onClick={() => setDrawerOpen(false)}
-            className="absolute inset-0 bg-black/45"
-          />
-          <div className="absolute inset-y-0 left-0 w-[268px] border-r shadow-2xl">
-            <Sidebar onNavigate={() => setDrawerOpen(false)} />
-          </div>
-        </div>
-      )}
-
-      <div className="flex min-w-0 flex-col">
-        <header
-          className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b px-3 sm:px-5"
-          style={{
-            background: 'color-mix(in srgb, var(--surface-card) 85%, transparent)',
-            backdropFilter: 'blur(8px)',
-          }}
-        >
+    <div className="flex min-h-dvh flex-col">
+      <header
+        className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-3 border-b px-3 sm:px-5"
+        style={{
+          background: 'color-mix(in srgb, var(--surface-card) 85%, transparent)',
+          backdropFilter: 'blur(8px)',
+        }}
+      >
           <button
             type="button"
             onClick={() => setDrawerOpen((v) => !v)}
@@ -141,13 +120,39 @@ export default function AdminLayout() {
             )}
           </button>
 
+          <Link to="/" aria-label="Arova Labs admin home" className="flex shrink-0 items-center">
+            <img src="/assets/arovalabs-logo.svg" alt="Arova Labs" className="h-8 w-auto max-w-[150px] object-contain object-left" />
+          </Link>
+
           <div className="flex-1" />
 
           <ThemeToggle />
           <UserMenu />
-        </header>
 
-        <main className="min-w-0 flex-1 p-4 sm:p-6">
+      </header>
+
+      <div className="min-h-0 flex-1 lg:grid lg:grid-cols-[256px_minmax(0,1fr)]">
+        {/* Desktop sidebar begins beneath the navbar. */}
+        <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] border-r lg:block">
+          <Sidebar />
+        </aside>
+
+        {/* Mobile drawer opens beneath the navbar. */}
+        {drawerOpen && (
+          <div className="fixed inset-x-0 bottom-0 top-14 z-50 lg:hidden">
+            <button
+              type="button"
+              aria-label="Close navigation"
+              onClick={() => setDrawerOpen(false)}
+              className="absolute inset-0 bg-black/45"
+            />
+            <div className="absolute inset-y-0 left-0 w-[268px] border-r shadow-2xl">
+              <Sidebar onNavigate={() => setDrawerOpen(false)} />
+            </div>
+          </div>
+        )}
+
+        <main className="min-w-0 p-4 sm:p-6">
           <Outlet />
         </main>
       </div>
