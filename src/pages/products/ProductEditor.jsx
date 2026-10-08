@@ -143,13 +143,22 @@ export default function ProductEditor() {
   const cats = useQuery({ queryKey: keys.categories(), queryFn: categories.list });
   const tagList = useQuery({ queryKey: keys.tags(), queryFn: tags.list });
 
+  /*
+   * Load the server's version into the form — but never on top of unsaved work.
+   *
+   * A save invalidates the query, which refetches, which lands here. If someone
+   * starts typing in that window their keystrokes were being wiped by the
+   * response to their own save. The dirty check makes the server authoritative
+   * only while there is nothing local to lose.
+   */
   useEffect(() => {
-    if (query.data?.product) {
-      const loaded = fromApi(query.data.product);
-      setForm(loaded);
-      setBaseline(toApi(loaded));
-      setDirty(false);
-    }
+    if (!query.data?.product || dirty) return;
+    const loaded = fromApi(query.data.product);
+    setForm(loaded);
+    setBaseline(toApi(loaded));
+    setDirty(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `dirty` is a guard,
+    // not a trigger: re-running when it flips would defeat the point.
   }, [query.data]);
 
   /*

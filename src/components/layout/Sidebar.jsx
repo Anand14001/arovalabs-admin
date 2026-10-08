@@ -21,6 +21,7 @@ import {
   Link2,
   Mail,
   Newspaper,
+  Quote,
   Package,
   ScrollText,
   Settings,
@@ -44,9 +45,9 @@ const SECTIONS = [
   {
     title: 'Operations',
     items: [
-      { to: '/orders', label: 'Orders', icon: Package, soon: true },
-      { to: '/reports', label: 'Lab reports', icon: FileText, soon: true },
-      { to: '/prescriptions', label: 'Prescriptions', icon: ClipboardList, soon: true },
+      { to: '/orders', label: 'Orders', icon: Package },
+      { to: '/reports', label: 'Lab reports', icon: FileText },
+      { to: '/prescriptions', label: 'Prescriptions', icon: ClipboardList },
       { to: '/centers', label: 'Centres & slots', icon: Building2, soon: true },
       { to: '/coupons', label: 'Coupons', icon: BadgePercent, soon: true },
     ],
@@ -54,9 +55,9 @@ const SECTIONS = [
   {
     title: 'Content',
     items: [
-      { to: '/posts', label: 'Blog', icon: Newspaper, soon: true },
-      { to: '/pages', label: 'Pages', icon: ScrollText, soon: true },
-      { to: '/navigation', label: 'Navigation', icon: Link2, soon: true },
+      { to: '/posts', label: 'Blog', icon: Newspaper },
+      { to: '/content-blocks', label: 'FAQs', icon: Quote },
+      { to: '/navigation', label: 'Navigation', icon: Link2 },
     ],
   },
   {

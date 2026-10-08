@@ -12,6 +12,14 @@ import ProductList from './pages/products/ProductList';
 import ProductEditor from './pages/products/ProductEditor';
 import Categories from './pages/catalog/Categories';
 import Media from './pages/catalog/Media';
+import OrderList from './pages/orders/OrderList';
+import OrderDetail from './pages/orders/OrderDetail';
+import Prescriptions from './pages/files/Prescriptions';
+import Reports from './pages/files/Reports';
+import PostList from './pages/content/PostList';
+import PostEditor from './pages/content/PostEditor';
+import ContentBlocks from './pages/content/ContentBlocks';
+import Navigation from './pages/content/Navigation';
 
 function FullScreenLoader() {
   return (
@@ -93,6 +101,15 @@ export default function App() {
         <Route path="/products" element={<ProductList />} />
         {/* "new" is handled inside the editor, so both paths share one screen. */}
         <Route path="/products/:id" element={<ProductEditor />} />
+        <Route path="/orders" element={<OrderList />} />
+        <Route path="/orders/:id" element={<OrderDetail />} />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/prescriptions" element={<Prescriptions />} />
+        <Route path="/posts" element={<PostList />} />
+        {/* "new" is handled inside the editor, so both paths share one screen. */}
+        <Route path="/posts/:id" element={<PostEditor />} />
+        <Route path="/content-blocks" element={<ContentBlocks />} />
+        <Route path="/navigation" element={<Navigation />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/media" element={<Media />} />
         <Route path="/account" element={<Account />} />

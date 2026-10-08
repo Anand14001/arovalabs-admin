@@ -214,3 +214,91 @@
     color: var(--text-muted);
   }
 }
+
+/*
+ * Editor typography.
+ *
+ * The editor shows roughly what the site shows — not pixel-identical, but close
+ * enough that an editor is not surprised by the published result. Scoped to the
+ * editor so it cannot leak into the admin's own UI.
+ */
+@layer components {
+  .prose-admin {
+    color: var(--text-strong);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .prose-admin > * + * {
+    margin-top: 0.9em;
+  }
+
+  .prose-admin h2 {
+    font-size: 1.4em;
+    font-weight: 600;
+    margin-top: 1.6em;
+  }
+
+  .prose-admin h3 {
+    font-size: 1.15em;
+    font-weight: 600;
+    margin-top: 1.4em;
+  }
+
+  .prose-admin h4 {
+    font-size: 1em;
+    font-weight: 600;
+  }
+
+  .prose-admin ul,
+  .prose-admin ol {
+    padding-left: 1.4em;
+  }
+
+  .prose-admin ul {
+    list-style: disc;
+  }
+
+  .prose-admin ol {
+    list-style: decimal;
+  }
+
+  .prose-admin li + li {
+    margin-top: 0.3em;
+  }
+
+  .prose-admin a {
+    color: var(--color-brand);
+    text-decoration: underline;
+  }
+
+  .prose-admin blockquote {
+    border-left: 3px solid var(--color-brand);
+    padding-left: 1em;
+    color: var(--text-base);
+    font-style: italic;
+  }
+
+  .prose-admin img {
+    border-radius: 0.5rem;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .prose-admin table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .prose-admin th,
+  .prose-admin td {
+    border: 1px solid var(--line);
+    padding: 0.4em 0.6em;
+    text-align: left;
+  }
+
+  /* ProseMirror puts the caret nowhere useful without this on an empty doc. */
+  .prose-admin:focus {
+    outline: none;
+  }
+}
