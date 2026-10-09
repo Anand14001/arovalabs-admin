@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Save } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import RepeatableList from '../../components/ui/RepeatableList';
+import { PageSkeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
 import { content, contentKeys } from '../../lib/catalog';
 
@@ -70,7 +71,7 @@ export default function ContentBlocks() {
   });
 
   if (blocks.isLoading) {
-    return <p className="py-16 text-center text-[13px] text-muted">Loading…</p>;
+    return <PageSkeleton />;
   }
 
   return (

@@ -114,9 +114,9 @@ function Item({ item, onNavigate }) {
       style={({ isActive }) =>
         isActive
           ? {
-              background: 'color-mix(in srgb, var(--color-brand) 12%, transparent)',
-              color: 'var(--color-brand)',
-            }
+            background: 'color-mix(in srgb, var(--color-brand) 12%, transparent)',
+            color: 'var(--color-brand)',
+          }
           : { color: 'var(--text-base)' }
       }
     >

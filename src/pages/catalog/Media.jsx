@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Trash2, Upload } from 'lucide-react';
 import Button from '../../components/ui/Button';
+import { ImageGridSkeleton } from '../../components/ui/Skeleton';
 import Alert from '../../components/ui/Alert';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import { Pagination } from '../../components/ui/DataTable';
@@ -109,7 +110,7 @@ export default function Media() {
 
       <div className="card p-4">
         {list.isLoading ? (
-          <p className="py-12 text-center text-[13px] text-muted">Loading…</p>
+          <ImageGridSkeleton />
         ) : list.data?.items.length ? (
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
             {list.data.items.map((m) => (

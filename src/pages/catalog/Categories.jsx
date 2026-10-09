@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ChevronRight, Eye, EyeOff, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ChevronRight, Pencil, Plus, Trash2 } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Field from '../../components/ui/Field';
 import Alert from '../../components/ui/Alert';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import IconButton from '../../components/ui/IconButton';
+import { Skeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
 import { categories, keys, flattenCategories } from '../../lib/catalog';
 
 const BLANK = { name: '', slug: '', parentId: null, description: '', isVisible: true };
 
-function Row({ node, depth, onEdit, onDelete, onToggleVisible }) {
+function Row({ node, depth, onEdit, onDelete }) {
   return (
     <>
       <div
@@ -33,31 +35,9 @@ function Row({ node, depth, onEdit, onDelete, onToggleVisible }) {
           {node.productCount} product{node.productCount === 1 ? '' : 's'}
         </span>
 
-        <div className="flex shrink-0 gap-0.5">
-          <button
-            type="button"
-            onClick={() => onToggleVisible(node)}
-            title={node.isVisible ? 'Hide from the site' : 'Show on the site'}
-            className="rounded p-1.5 text-muted transition hover:bg-[var(--surface-hover)] hover:text-strong"
-          >
-            {node.isVisible ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => onEdit(node)}
-            title="Edit"
-            className="rounded p-1.5 text-muted transition hover:bg-[var(--surface-hover)] hover:text-strong"
-          >
-            <Pencil className="size-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete(node)}
-            title="Delete"
-            className="rounded p-1.5 text-muted transition hover:bg-[var(--surface-hover)] hover:text-[var(--color-danger)]"
-          >
-            <Trash2 className="size-3.5" />
-          </button>
+        <div className="flex shrink-0 gap-1">
+          <IconButton icon={Pencil} label={`Edit category ${node.name}`} onClick={() => onEdit(node)} />
+          <IconButton icon={Trash2} label={`Delete category ${node.name}`} tone="danger" onClick={() => onDelete(node)} />
         </div>
       </div>
 
@@ -68,7 +48,6 @@ function Row({ node, depth, onEdit, onDelete, onToggleVisible }) {
           depth={depth + 1}
           onEdit={onEdit}
           onDelete={onDelete}
-          onToggleVisible={onToggleVisible}
         />
       ))}
     </>
@@ -104,12 +83,6 @@ export default function Categories() {
       setFieldErrors(e.fieldErrors ?? {});
       toast.error(e.message);
     },
-  });
-
-  const toggleVisible = useMutation({
-    mutationFn: (node) => categories.update(node.id, { isVisible: !node.isVisible }),
-    onSuccess: invalidate,
-    onError: (e) => toast.error(e.message),
   });
 
   const remove = useMutation({
@@ -175,7 +148,10 @@ export default function Categories() {
 
       <div className="card overflow-hidden">
         {list.isLoading ? (
-          <p className="py-12 text-center text-[13px] text-muted">Loading…</p>
+          <div role="status" aria-label="Loading categories" className="space-y-3 p-4">
+            <span className="sr-only">Loading categories</span>
+            {Array.from({ length: 6 }, (_, index) => <Skeleton key={index} className="h-10 w-full" />)}
+          </div>
         ) : list.data?.items.length ? (
           list.data.items.map((node) => (
             <Row
@@ -184,7 +160,6 @@ export default function Categories() {
               depth={0}
               onEdit={openEdit}
               onDelete={setConfirm}
-              onToggleVisible={(n) => toggleVisible.mutate(n)}
             />
           ))
         ) : (

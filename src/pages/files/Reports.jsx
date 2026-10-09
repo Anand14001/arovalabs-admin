@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle, Copy, Download, Mail, Search, Send, Trash2, Upload, XCircle,
@@ -7,6 +8,8 @@ import DataTable, { Pagination } from '../../components/ui/DataTable';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import Alert from '../../components/ui/Alert';
+import IconButton from '../../components/ui/IconButton';
+import { Skeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
 import { reports, fileKeys, REPORT_STATUS, downloadPrivateFile } from '../../lib/catalog';
 
@@ -109,6 +112,8 @@ export default function Reports() {
   const [uploadFor, setUploadFor] = useState(null);
   const [withdrawing, setWithdrawing] = useState(null);
   const [reason, setReason] = useState('');
+  const [copyingId, setCopyingId] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
 
   const list = useQuery({
     queryKey: fileKeys.reports(filters),
@@ -118,16 +123,16 @@ export default function Reports() {
 
   const awaiting = useQuery({ queryKey: fileKeys.awaiting(), queryFn: reports.awaiting });
 
-  const refresh = () => {
-    qc.invalidateQueries({ queryKey: ['reports'] });
-    qc.invalidateQueries({ queryKey: ['reports-awaiting'] });
-    qc.invalidateQueries({ queryKey: ['orders'] });
-  };
+  const refresh = () => Promise.all([
+    qc.invalidateQueries({ queryKey: ['reports'] }),
+    qc.invalidateQueries({ queryKey: ['reports-awaiting'] }),
+    qc.invalidateQueries({ queryKey: ['orders'] }),
+  ]);
 
   const publish = useMutation({
     mutationFn: (id) => reports.publish(id),
-    onSuccess: () => {
-      refresh();
+    onSuccess: async () => {
+      await refresh();
       toast.success('Published. Send the link when you are ready.');
     },
     onError: (e) => toast.error(e.message),
@@ -146,8 +151,8 @@ export default function Reports() {
 
   const withdraw = useMutation({
     mutationFn: () => reports.withdraw(withdrawing.id, reason),
-    onSuccess: () => {
-      refresh();
+    onSuccess: async () => {
+      await refresh();
       setWithdrawing(null);
       setReason('');
       toast.success('Withdrawn — the link stopped working immediately.');
@@ -157,28 +162,34 @@ export default function Reports() {
 
   const remove = useMutation({
     mutationFn: (id) => reports.remove(id),
-    onSuccess: () => {
-      refresh();
+    onSuccess: async () => {
+      await refresh();
       toast.success('Deleted.');
     },
     onError: (e) => toast.error(e.message),
   });
 
   const copyLink = async (id) => {
+    setCopyingId(id);
     try {
       const { url } = await reports.shareLink(id);
       await navigator.clipboard.writeText(url);
       toast.success('Link copied — paste it into WhatsApp.');
     } catch (e) {
       toast.error(e.message);
+    } finally {
+      setCopyingId(null);
     }
   };
 
   const download = async (r) => {
+    setDownloadingId(r.id);
     try {
       await downloadPrivateFile(reports.downloadPath(r.id), r.file?.originalName ?? r.title);
     } catch (e) {
       toast.error(e.message);
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -229,22 +240,22 @@ export default function Reports() {
     {
       key: 'actions',
       header: '',
-      width: '180px',
+      width: '224px',
       render: (r) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-          <button
-            type="button"
-            title="Download (staff copy)"
+          <IconButton
+            icon={Download}
+            label={`Download report ${r.title}`}
+            loading={downloadingId === r.id}
+            disabled={Boolean(downloadingId)}
             onClick={() => download(r)}
-            className="rounded p-1.5 text-muted transition hover:bg-[var(--surface-hover)] hover:text-strong"
-          >
-            <Download className="size-3.5" />
-          </button>
+          />
 
           {r.status === 'UPLOADED' && (
             <Button
               className="px-2 py-1 text-[12px]"
-              loading={publish.isPending}
+              loading={publish.isPending && publish.variables === r.id}
+              disabled={publish.isPending}
               onClick={() => publish.mutate(r.id)}
             >
               Publish
@@ -253,45 +264,42 @@ export default function Reports() {
 
           {r.status === 'PUBLISHED' && (
             <>
-              <button
-                type="button"
-                title="Copy the share link"
+              <IconButton
+                icon={Copy}
+                label={`Copy share link for ${r.title}`}
+                loading={copyingId === r.id}
+                disabled={Boolean(copyingId)}
                 onClick={() => copyLink(r.id)}
-                className="rounded p-1.5 text-muted transition hover:bg-[var(--surface-hover)] hover:text-strong"
-              >
-                <Copy className="size-3.5" />
-              </button>
-              <button
-                type="button"
-                title="Email it to the customer"
+              />
+              <IconButton
+                icon={Mail}
+                label={`Email report ${r.title} to customer`}
+                loading={notify.isPending && notify.variables === r.id}
+                disabled={notify.isPending}
                 onClick={() => notify.mutate(r.id)}
-                className="rounded p-1.5 text-muted transition hover:bg-[var(--surface-hover)] hover:text-strong"
-              >
-                <Mail className="size-3.5" />
-              </button>
-              <button
-                type="button"
-                title="Withdraw — kills the link"
+              />
+              <IconButton
+                icon={XCircle}
+                label={`Withdraw report link for ${r.title}`}
+                tone="danger"
+                disabled={withdraw.isPending}
                 onClick={() => {
                   setWithdrawing(r);
                   setReason('');
                 }}
-                className="rounded p-1.5 text-muted transition hover:bg-[var(--surface-hover)] hover:text-[var(--color-danger)]"
-              >
-                <XCircle className="size-3.5" />
-              </button>
+              />
             </>
           )}
 
           {r.status !== 'PUBLISHED' && (
-            <button
-              type="button"
-              title="Delete"
+            <IconButton
+              icon={Trash2}
+              label={`Delete report ${r.title}`}
+              tone="danger"
+              loading={remove.isPending && remove.variables === r.id}
+              disabled={remove.isPending}
               onClick={() => remove.mutate(r.id)}
-              className="rounded p-1.5 text-muted transition hover:bg-[var(--surface-hover)] hover:text-[var(--color-danger)]"
-            >
-              <Trash2 className="size-3.5" />
-            </button>
+            />
           )}
         </div>
       ),
@@ -319,7 +327,10 @@ export default function Reports() {
         </div>
 
         {awaiting.isLoading ? (
-          <p className="py-6 text-center text-[13px] text-muted">Loading…</p>
+          <div role="status" aria-label="Loading report queue" className="space-y-3 py-2">
+            <span className="sr-only">Loading report queue</span>
+            {Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-12 w-full" />)}
+          </div>
         ) : worklist.length === 0 ? (
           <p className="py-6 text-center text-[13px] text-muted">
             Nothing outstanding — every collected sample has its reports published.
@@ -329,9 +340,13 @@ export default function Reports() {
             {worklist.map((o) => (
               <li key={o.id} className="flex flex-wrap items-center gap-3 py-2.5">
                 <div className="min-w-[160px] flex-1">
-                  <span className="text-[13.5px] font-medium text-strong tabular">
+                  <Link
+                    to={`/orders/${o.id}`}
+                    className="text-[13.5px] font-semibold tabular text-strong underline decoration-[var(--color-brand)] underline-offset-2 hover:text-[var(--color-brand)]"
+                    aria-label={`Open order ${o.orderNumber}`}
+                  >
                     {o.orderNumber}
-                  </span>
+                  </Link>
                   <span className="block text-[11.5px] text-muted">
                     {o.contactName} · {o.testCount} test{o.testCount === 1 ? '' : 's'} ·{' '}
                     {o.reportsPublished}/{o.testCount} published

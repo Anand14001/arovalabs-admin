@@ -4,6 +4,8 @@ import { Plus, Save, Trash2 } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Alert from '../../components/ui/Alert';
 import RepeatableList from '../../components/ui/RepeatableList';
+import IconButton from '../../components/ui/IconButton';
+import { Skeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
 import { content, contentKeys } from '../../lib/catalog';
 
@@ -144,7 +146,10 @@ export default function Navigation() {
       </header>
 
       {blocks.isLoading ? (
-        <p className="py-12 text-center text-[13px] text-muted">Loading…</p>
+        <div role="status" aria-label="Loading navigation" className="space-y-4">
+          <span className="sr-only">Loading navigation</span>
+          {Array.from({ length: 3 }, (_, index) => <div key={index} className="card space-y-3 p-5"><Skeleton className="h-5 w-36" /><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>)}
+        </div>
       ) : (
         MENUS.map((m) => (
           <MenuEditor
@@ -203,14 +208,14 @@ export default function Navigation() {
                     <span className="text-[12px] text-muted tabular">
                       {r.hitCount} hit{r.hitCount === 1 ? '' : 's'}
                     </span>
-                    <button
-                      type="button"
+                    <IconButton
+                      icon={Trash2}
+                      tone="danger"
+                      label={`Remove redirect from ${r.fromPath}`}
+                      loading={removeRedirect.isPending && removeRedirect.variables === r.id}
+                      disabled={removeRedirect.isPending}
                       onClick={() => removeRedirect.mutate(r.id)}
-                      aria-label={`Remove the redirect from ${r.fromPath}`}
-                      className="rounded p-1.5 text-muted transition hover:bg-[var(--surface-hover)] hover:text-[var(--color-danger)]"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </button>
+                    />
                   </div>
                 </li>
               ))}

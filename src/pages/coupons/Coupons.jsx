@@ -4,6 +4,7 @@ import { BadgePercent, Plus, Search, Tag, Trash2, Edit3, CheckCircle, XCircle } 
 import DataTable, { Pagination } from '../../components/ui/DataTable';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import IconButton from '../../components/ui/IconButton';
 import { useToast } from '../../components/ui/Toast';
 import { coupons, couponKeys, COUPON_STATUS } from '../../lib/catalog';
 
@@ -75,9 +76,9 @@ export default function Coupons() {
 
   const toggleStatusMutation = useMutation({
     mutationFn: ({ id, isActive }) => coupons.update(id, { isActive }),
-    onSuccess: () => {
-      toast.success('Coupon status changed');
-      refresh();
+    onSuccess: async (_res, { isActive }) => {
+      await refresh();
+      toast.success(isActive ? 'Coupon activated' : 'Coupon deactivated');
     },
     onError: (err) => toast.error(err.message || 'Status change failed'),
   });
@@ -195,39 +196,38 @@ export default function Coupons() {
     {
       key: 'actions',
       header: 'Actions',
-      width: '120px',
+      width: '156px',
       render: (row) => (
         <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-          <button
-            type="button"
-            title={row.isActive ? 'Deactivate Coupon' : 'Activate Coupon'}
+          <IconButton
+            icon={row.isActive ? XCircle : CheckCircle}
+            label={`${row.isActive ? 'Deactivate' : 'Activate'} coupon ${row.code}`}
+            tone={row.isActive ? 'danger' : 'success'}
+            loading={toggleStatusMutation.isPending && toggleStatusMutation.variables?.id === row.id}
+            disabled={toggleStatusMutation.isPending || (deleteMutation.isPending && deleteMutation.variables === row.id)}
             onClick={() => toggleStatusMutation.mutate({ id: row.id, isActive: !row.isActive })}
-            className={`p-1.5 rounded transition ${
-              row.isActive ? 'text-[var(--color-success)] hover:bg-emerald-50' : 'text-muted hover:bg-neutral-100'
-            }`}
-          >
-            {row.isActive ? <CheckCircle className="size-4" /> : <XCircle className="size-4" />}
-          </button>
-          <button
-            type="button"
-            title="Edit Coupon"
+          />
+          <IconButton
+            icon={Edit3}
+            label={`Edit coupon ${row.code}`}
+            disabled={
+              (toggleStatusMutation.isPending && toggleStatusMutation.variables?.id === row.id) ||
+              (deleteMutation.isPending && deleteMutation.variables === row.id)
+            }
             onClick={() => openEditModal(row)}
-            className="p-1.5 rounded text-muted hover:text-strong hover:bg-[var(--surface-hover)] transition"
-          >
-            <Edit3 className="size-4" />
-          </button>
-          <button
-            type="button"
-            title="Delete Coupon"
+          />
+          <IconButton
+            icon={Trash2}
+            label={`Remove coupon ${row.code}`}
+            tone="danger"
+            loading={deleteMutation.isPending && deleteMutation.variables === row.id}
+            disabled={deleteMutation.isPending || (toggleStatusMutation.isPending && toggleStatusMutation.variables?.id === row.id)}
             onClick={() => {
               if (confirm(`Remove coupon ${row.code}?`)) {
                 deleteMutation.mutate(row.id);
               }
             }}
-            className="p-1.5 rounded text-[var(--color-danger)] hover:bg-red-50 transition"
-          >
-            <Trash2 className="size-4" />
-          </button>
+          />
         </div>
       ),
     },
@@ -258,11 +258,10 @@ export default function Coupons() {
               key={tab.key}
               type="button"
               onClick={() => setFilters((f) => ({ ...f, status: tab.key, page: 1 }))}
-              className={`rounded-lg px-3 py-1.5 text-[13px] font-medium transition ${
-                isActive
+              className={`rounded-lg px-3 py-1.5 text-[13px] font-medium transition ${isActive
                   ? 'bg-[var(--surface-sunken)] font-semibold text-strong'
                   : 'text-muted hover:bg-[var(--surface-hover)]'
-              }`}
+                }`}
             >
               {tab.label}
             </button>

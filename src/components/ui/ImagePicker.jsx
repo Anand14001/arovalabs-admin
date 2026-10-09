@@ -9,10 +9,11 @@
 
 import { useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ImagePlus, Loader2, Trash2, Upload, X } from 'lucide-react';
+import { ImagePlus, Trash2, Upload, X } from 'lucide-react';
 import { media, keys } from '../../lib/catalog';
 import { useToast } from './Toast';
 import Button from './Button';
+import { ImageGridSkeleton } from './Skeleton';
 
 function MediaLibrary({ open, onClose, onSelect }) {
   const toast = useToast();
@@ -93,9 +94,7 @@ function MediaLibrary({ open, onClose, onSelect }) {
 
         <div className="min-h-0 flex-1 overflow-y-auto p-4">
           {list.isLoading ? (
-            <div className="grid place-items-center py-16">
-              <Loader2 className="size-5 animate-spin text-muted" aria-label="Loading" />
-            </div>
+            <ImageGridSkeleton count={15} />
           ) : list.data?.items.length ? (
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
               {list.data.items.map((m) => (

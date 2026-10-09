@@ -65,31 +65,33 @@ export default function Account() {
         </Alert>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <section className="card p-5">
-          <h2 className="text-[15px]">Details</h2>
-          <dl className="mt-3">
-            <Row label="Name">{user?.name}</Row>
-            <Row label="Email">{user?.email}</Row>
-            <Row label="Role">
-              {/* One role exists by decision, so this is informational only. */}
-              {user?.role === 'SUPER_ADMIN' ? 'Super admin' : user?.role}
-            </Row>
-            <Row label="Last signed in">
-              {user?.lastLoginAt
-                ? new Date(user.lastLoginAt).toLocaleString()
-                : '—'}
-            </Row>
-          </dl>
+      <div className={user?.mustChangePassword ? 'mx-auto max-w-xl' : 'grid gap-4 md:grid-cols-2'}>
+        {!user?.mustChangePassword && (
+          <section className="card p-5">
+            <h2 className="text-[15px]">Details</h2>
+            <dl className="mt-3">
+              <Row label="Name">{user?.name}</Row>
+              <Row label="Email">{user?.email}</Row>
+              <Row label="Role">
+                {/* One role exists by decision, so this is informational only. */}
+                {user?.role === 'SUPER_ADMIN' ? 'Super admin' : user?.role}
+              </Row>
+              <Row label="Last signed in">
+                {user?.lastLoginAt
+                  ? new Date(user.lastLoginAt).toLocaleString()
+                  : '—'}
+              </Row>
+            </dl>
 
-          <div className="mt-5 border-t pt-4">
-            <p className="label mb-2">Colour theme</p>
-            <ThemeToggle showLabels />
-            <p className="mt-2 text-[12px] text-muted">
-              System follows your device&rsquo;s appearance setting.
-            </p>
-          </div>
-        </section>
+            <div className="mt-5 border-t pt-4">
+              <p className="label mb-2">Colour theme</p>
+              <ThemeToggle showLabels />
+              <p className="mt-2 text-[12px] text-muted">
+                System follows your device&rsquo;s appearance setting.
+              </p>
+            </div>
+          </section>
+        )}
 
         <section className="card p-5">
           <h2 className="text-[15px]">Change password</h2>

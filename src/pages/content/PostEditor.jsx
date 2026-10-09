@@ -8,6 +8,7 @@ import Alert from '../../components/ui/Alert';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import RichTextEditor from '../../components/ui/RichTextEditor';
 import ImagePicker from '../../components/ui/ImagePicker';
+import { PageSkeleton, Skeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
 import { content, contentKeys, CONTENT_STATUS } from '../../lib/catalog';
 
@@ -168,7 +169,7 @@ export default function PostEditor() {
   );
 
   if (!isNew && query.isLoading) {
-    return <p className="py-16 text-center text-[13px] text-muted">Loading…</p>;
+    return <PageSkeleton variant="editor" />;
   }
   if (!isNew && query.error) {
     return <Alert tone="error" className="mx-auto max-w-2xl">{query.error.message}</Alert>;
@@ -416,7 +417,10 @@ export default function PostEditor() {
 
             <div className="mt-4 min-h-0 flex-1 overflow-y-auto">
               {revisions.isLoading ? (
-                <p className="py-6 text-center text-[13px] text-muted">Loading…</p>
+                <div role="status" aria-label="Loading revisions" className="space-y-3 py-2">
+                  <span className="sr-only">Loading revisions</span>
+                  {Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-12 w-full" />)}
+                </div>
               ) : revisions.data?.items.length ? (
                 <ul className="divide-y">
                   {revisions.data.items.map((r) => (

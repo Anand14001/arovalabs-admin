@@ -44,7 +44,7 @@
 
   --text-strong: #0f172a;
   --text-base: #475569;
-  --text-muted: #94a3b8;
+  --text-muted: #5f6f82;
 
   --line: #e2e8f0;
   --line-strong: #cbd5e1;
@@ -59,7 +59,7 @@
 
   --text-strong: #eef2f6;
   --text-base: #a3b2c2;
-  --text-muted: #6b7f91;
+  --text-muted: #8b9aaa;
 
   --line: #222d38;
   --line-strong: #2d3a47;
@@ -76,7 +76,7 @@
 
     --text-strong: #eef2f6;
     --text-base: #a3b2c2;
-    --text-muted: #6b7f91;
+    --text-muted: #8b9aaa;
 
     --line: #222d38;
     --line-strong: #2d3a47;
@@ -131,6 +131,12 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
 @layer components {
   .surface {
     background: var(--surface-card);
@@ -178,6 +184,46 @@
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5
       text-[14px] font-medium transition disabled:cursor-not-allowed disabled:opacity-55;
+  }
+
+  .table-icon-button {
+    display: inline-grid;
+    min-width: 40px;
+    min-height: 40px;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: transparent;
+    transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease;
+  }
+
+  .table-icon-button:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  .table-icon-button:disabled {
+    cursor: wait;
+    opacity: 0.6;
+  }
+
+  .table-icon-button--neutral { color: var(--text-muted); }
+  .table-icon-button--neutral:hover:not(:disabled) {
+    border-color: var(--line);
+    background: var(--surface-hover);
+    color: var(--text-strong);
+  }
+
+  .table-icon-button--success { color: var(--color-success); }
+  .table-icon-button--success:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--color-success) 25%, var(--line));
+    background: color-mix(in srgb, var(--color-success) 10%, var(--surface-card));
+  }
+
+  .table-icon-button--danger { color: var(--color-danger); }
+  .table-icon-button--danger:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--color-danger) 25%, var(--line));
+    background: color-mix(in srgb, var(--color-danger) 9%, var(--surface-card));
   }
 
   .btn-primary {
@@ -296,7 +342,7 @@
 .login-subtitle { margin: 8px 0 0; color: var(--login-muted); font-size: 16px; }
 .login-title-rule { width: 34px; height: 3px; margin-top: 23px; border-radius: 99px; background: var(--login-teal); }
 .login-form-content .label { margin-bottom: 7px; color: #132b40; font-size: 13px; }
-.login-form-content .input { min-height: 52px; border-radius: 10px; padding: 13px 14px; color: #172b41; }
+.login-form-content .input { min-height: 52px; border-radius: 10px; padding: 13px 14px; background: #fff; color: #172b41; color-scheme: light; }
 .login-form-content .input::placeholder { color: #8391a7; }
 .login-password-wrap { position: relative; }
 .login-password-wrap .input { padding-right: 48px; }
@@ -387,7 +433,7 @@
 .forgot-email-field .label { margin-bottom: 8px; color: #162f43; font-size: 13px; }
 .forgot-input-wrap { position: relative; }
 .forgot-input-wrap > svg { position: absolute; z-index: 1; top: 50%; left: 14px; width: 19px; height: 19px; color: #19384b; transform: translateY(-50%); pointer-events: none; }
-.forgot-input-wrap .input { min-height: 52px; padding: 13px 14px 13px 46px; border-radius: 10px; color: #172b41; }
+.forgot-input-wrap .input { min-height: 52px; padding: 13px 14px 13px 46px; border-radius: 10px; background: #fff; color: #172b41; color-scheme: light; }
 .forgot-input-wrap .input::placeholder { color: #8391a7; }
 .forgot-field-error { margin: 6px 0 0; color: #be123c; font-size: 12.5px; }
 .forgot-submit { min-height: 54px; border-radius: 10px; background: linear-gradient(100deg, #147a7f, #126970); box-shadow: 0 7px 16px rgb(17 119 123 / 16%); }

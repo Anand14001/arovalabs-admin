@@ -9,7 +9,7 @@
  * definition can drive a CSV export later without re-deriving the headers.
  */
 
-import { Loader2 } from 'lucide-react';
+import { Skeleton } from './Skeleton';
 
 export default function DataTable({
   columns,
@@ -51,7 +51,7 @@ export default function DataTable({
       {/* The wrapper scrolls, not the page, so a wide table stays usable on a
           phone without the whole layout sliding sideways. */}
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-left">
+        <table className="w-full border-collapse text-left" aria-busy={loading || undefined}>
           <thead>
             <tr style={{ background: 'var(--surface-sunken)' }}>
               {selectable && (
@@ -80,14 +80,18 @@ export default function DataTable({
 
           <tbody>
             {loading && (
-              <tr>
-                <td
-                  colSpan={columns.length + (selectable ? 1 : 0)}
-                  className="px-3 py-12 text-center"
-                >
-                  <Loader2 className="mx-auto size-5 animate-spin text-muted" aria-label="Loading" />
-                </td>
-              </tr>
+              Array.from({ length: 6 }, (_, row) => (
+                <tr key={`skeleton-${row}`} className="border-t">
+                  {selectable && (
+                    <td className="px-3 py-3"><Skeleton className="size-3.5" /></td>
+                  )}
+                  {columns.map((column, columnIndex) => (
+                    <td key={column.key} className="px-3 py-3">
+                      <Skeleton className={`h-4 ${columnIndex === 0 ? 'w-3/4' : columnIndex % 2 ? 'w-1/2' : 'w-2/3'}`} />
+                    </td>
+                  ))}
+                </tr>
+              ))
             )}
 
             {!loading && rows.length === 0 && (

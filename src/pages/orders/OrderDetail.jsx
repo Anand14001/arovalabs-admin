@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  ArrowLeft, Ban, CalendarClock, CreditCard, Mail, MapPin, Phone, Receipt, Save, User,
+  ArrowLeft, Ban, CalendarClock, CreditCard, LoaderCircle, Mail, MapPin, Phone, Receipt, Save, User,
 } from 'lucide-react';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import Alert from '../../components/ui/Alert';
+import { PageSkeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
 import {
   orders, orderKeys, collectionOptions, formatPaise, ORDER_STATUS, PAYMENT_STATUS,
@@ -50,6 +51,7 @@ export default function OrderDetail() {
 
   const [notes, setNotes] = useState('');
   const [notesDirty, setNotesDirty] = useState(false);
+  const [statusChoice, setStatusChoice] = useState('');
   const [dialog, setDialog] = useState(null); // 'cancel' | 'refund' | 'reschedule'
   const [cancelReason, setCancelReason] = useState('');
   const [refundAmount, setRefundAmount] = useState('');
@@ -88,12 +90,16 @@ export default function OrderDetail() {
    * generic message.
    */
   const onDone = (message) => ({
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       refresh(data);
+      if (variables?.status) setStatusChoice('');
       setDialog(null);
       toast.success(message);
     },
-    onError: (e) => toast.error(e.message),
+    onError: (e, variables) => {
+      if (variables?.status) setStatusChoice('');
+      toast.error(e.message);
+    },
   });
 
   const advance = useMutation({
@@ -137,7 +143,7 @@ export default function OrderDetail() {
   });
 
   if (query.isLoading) {
-    return <p className="py-16 text-center text-[13px] text-muted">Loading…</p>;
+    return <PageSkeleton />;
   }
   if (query.error) {
     return (
@@ -210,28 +216,39 @@ export default function OrderDetail() {
         </div>
       </header>
 
-      {/*
-        Only legal next steps are offered, and the list comes from the same
-        table the server validates against — so the buttons cannot drift from
-        the rules.
-      */}
+      {/* Only legal next steps are offered, and the server validates the same transitions. */}
       {forward.length > 0 && (
         <div
-          className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2.5"
+          className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border px-3 py-2.5"
           style={{ background: 'var(--surface-sunken)' }}
         >
-          <span className="text-[12.5px] font-medium text-muted">Move to:</span>
-          {forward.map((s) => (
-            <Button
-              key={s}
-              variant="outline"
-              className="px-2.5 py-1.5 text-[12.5px]"
-              loading={advance.isPending}
-              onClick={() => advance.mutate({ status: s })}
-            >
-              {ORDER_STATUS[s]?.label ?? s}
-            </Button>
-          ))}
+          <label htmlFor="order-status" className="text-[12.5px] font-medium text-muted">
+            Update order status
+          </label>
+          <select
+            id="order-status"
+            className="input w-auto min-w-52"
+            value={advance.isPending ? advance.variables?.status ?? statusChoice : statusChoice}
+            disabled={advance.isPending}
+            onChange={(e) => {
+              const nextStatus = e.target.value;
+              setStatusChoice(nextStatus);
+              if (nextStatus) advance.mutate({ status: nextStatus });
+            }}
+          >
+            <option value="">Choose next status…</option>
+            {forward.map((nextStatus) => (
+              <option key={nextStatus} value={nextStatus}>
+                {ORDER_STATUS[nextStatus]?.label ?? nextStatus}
+              </option>
+            ))}
+          </select>
+          {advance.isPending && (
+            <span role="status" aria-live="polite" className="inline-flex items-center gap-2 text-[12.5px] text-muted">
+              <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+              Updating status…
+            </span>
+          )}
         </div>
       )}
 

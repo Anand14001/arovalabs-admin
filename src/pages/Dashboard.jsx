@@ -5,6 +5,7 @@ import { ArrowUpRight, IndianRupee, ShoppingBag, ClipboardList } from 'lucide-re
 import { api } from '../lib/api';
 import { formatPaise } from '../lib/catalog';
 import { useAuth } from '../context/AuthContext';
+import { Skeleton } from '../components/ui/Skeleton';
 
 const iso = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 const periods = { '7d': 7, '30d': 30, '90d': 90 };
@@ -47,6 +48,21 @@ export default function Dashboard() {
         <select aria-label="Analytics period" className="input w-auto" value={period} onChange={(e) => setPeriod(e.target.value)}><option value="7d">Last 7 days</option><option value="30d">Last 30 days</option><option value="90d">Last 90 days</option></select>
       </header>
 
+      {analytics.isLoading ? (
+        <div role="status" aria-label="Loading dashboard analytics" className="space-y-3">
+          <span className="sr-only">Loading dashboard analytics</span>
+          <div className="grid w-full gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {cards.map(({ title }) => <div key={title} className="card space-y-3 p-4"><Skeleton className="h-4 w-28" /><Skeleton className="h-8 w-24" /><Skeleton className="h-3 w-36" /></div>)}
+          </div>
+          <div className="grid gap-3 lg:grid-cols-[1.6fr_1fr]">
+            <Skeleton className="h-72 w-full rounded-xl" />
+            <div className="card space-y-4 p-5">{Array.from({ length: 6 }, (_, index) => <Skeleton key={index} className="h-5 w-full" />)}</div>
+          </div>
+          <div className="grid gap-3 lg:grid-cols-2"><Skeleton className="h-52 rounded-xl" /><Skeleton className="h-52 rounded-xl" /></div>
+          <Skeleton className="h-40 rounded-xl" />
+        </div>
+      ) : (
+        <>
       {analytics.isError && <div className="card mb-4 p-4 text-[13px]" style={{ color: 'var(--color-danger)' }}>{analytics.error.message}</div>}
       <div className="grid w-full gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map(({ title, value, compare, icon: Icon, href }) => <div key={title} className="card p-4"><div className="flex items-center justify-between"><p className="text-[12px] font-medium text-muted">{title}</p><Icon className="size-4 text-muted" /></div><p className="mt-3 text-[24px] font-semibold tabular text-strong">{value}</p><p className="mt-1 text-[11.5px] text-muted">{compare}</p>{href && <Link className="mt-2 inline-flex items-center gap-1 text-[12px] font-medium" style={{ color: 'var(--color-brand)' }} to={href}>Open queue <ArrowUpRight size={13} /></Link>}</div>)}
@@ -57,6 +73,8 @@ export default function Dashboard() {
         <section className="card p-5"><h2 className="text-[15px] font-semibold">Needs attention</h2><div className="mt-3 space-y-2">{[["Failed payments",data?.attention.failedPayments,'/orders'],['Reports to complete',data?.attention.reportQueue,'/reports'],['Prescriptions to review',data?.attention.prescriptionsToReview,'/prescriptions'],['New enquiries',data?.attention.newEnquiries,'/leads']].map(([label,count,to])=><Link key={label} to={to} className="flex justify-between border-b pb-2 text-[13px] last:border-0"><span className="text-muted">{label}</span><strong className="tabular text-strong">{count ?? '—'}</strong></Link>)}</div></section></div>
       <section className="card mt-3 p-5"><h2 className="text-[15px] font-semibold">Top tests & packages</h2><div className="mt-3 grid gap-2 sm:grid-cols-2">{data?.topProducts?.length ? data.topProducts.map((p)=><div key={p.title} className="flex justify-between gap-3 border-b pb-2 text-[13px]"><span className="truncate text-strong">{p.title}<small className="ml-2 text-muted">×{p.quantity}</small></span><strong className="shrink-0 tabular text-strong">{formatPaise(p.revenue)}</strong></div>) : <p className="text-[13px] text-muted">No paid orders in this period.</p>}</div></section>
       <p className="mt-3 text-[12px] text-muted">Revenue = captured payments minus processed refunds. Date range uses UTC.</p>
+        </>
+      )}
     </div>
   );
 }

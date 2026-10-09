@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Copy, ImageOff, Plus, Search } from 'lucide-react';
+import { CheckCircle2, Copy, ImageOff, Loader2, Plus, Search, X } from 'lucide-react';
 import DataTable, { Pagination } from '../../components/ui/DataTable';
 import Badge, { StatusBadge } from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import IconButton from '../../components/ui/IconButton';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import { useToast } from '../../components/ui/Toast';
 import { products, categories, keys, flattenCategories, formatPaise } from '../../lib/catalog';
@@ -21,6 +22,7 @@ export default function ProductList() {
   });
   const [selected, setSelected] = useState([]);
   const [confirm, setConfirm] = useState(null);
+  const [duplicateResult, setDuplicateResult] = useState(null);
 
   const list = useQuery({
     queryKey: keys.products(filters),
@@ -36,10 +38,10 @@ export default function ProductList() {
 
   const duplicate = useMutation({
     mutationFn: products.duplicate,
-    onSuccess: ({ product }) => {
-      invalidate();
-      toast.success(`Duplicated as a draft: ${product.title}`);
-      navigate(`/products/${product.id}`);
+    onSuccess: async ({ product }) => {
+      await invalidate();
+      setDuplicateResult(product);
+      toast.success(`Draft copy created: ${product.title}`);
     },
     onError: (e) => toast.error(e.message),
   });
@@ -152,14 +154,16 @@ export default function ProductList() {
       width: '96px',
       render: (p) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-          <button
-            type="button"
-            title="Duplicate"
-            onClick={() => duplicate.mutate(p.id)}
-            className="rounded p-1.5 text-muted transition hover:bg-[var(--surface-hover)] hover:text-strong"
-          >
-            <Copy className="size-3.5" />
-          </button>
+          <IconButton
+            icon={Copy}
+            label={`Duplicate ${p.title} as draft`}
+            loading={duplicate.isPending && duplicate.variables === p.id}
+            disabled={duplicate.isPending}
+            onClick={() => {
+              setDuplicateResult(null);
+              duplicate.mutate(p.id);
+            }}
+          />
         </div>
       ),
     },
@@ -247,6 +251,31 @@ export default function ProductList() {
           <option value="price-desc">Price: high to low</option>
         </select>
       </div>
+
+      {duplicate.isPending && (
+        <p className="mb-3 flex items-center gap-2 text-[13px] text-muted" role="status" aria-live="polite">
+          <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+          Creating a draft copy…
+        </p>
+      )}
+
+      {duplicateResult && (
+        <div className="card mb-3 flex flex-wrap items-center gap-3 p-3" role="status" aria-live="polite">
+          <CheckCircle2 className="size-4 shrink-0 text-[var(--color-success)]" aria-hidden="true" />
+          <p className="min-w-0 flex-1 text-[13px] text-strong">
+            Draft copy created: <strong>{duplicateResult.title}</strong>
+            {(filters.q || filters.type || filters.status || filters.category) && (
+              <span className="ml-1 text-muted">It may be hidden by the current filters.</span>
+            )}
+          </p>
+          <Button variant="outline" className="px-2.5 py-1.5 text-[12.5px]" onClick={() => navigate(`/products/${duplicateResult.id}`)}>
+            Open draft
+          </Button>
+          <button type="button" aria-label="Dismiss draft confirmation" onClick={() => setDuplicateResult(null)} className="rounded p-1 text-muted hover:bg-[var(--surface-hover)]">
+            <X className="size-4" aria-hidden="true" />
+          </button>
+        </div>
+      )}
 
       {selected.length > 0 && (
         <div

@@ -4,6 +4,7 @@ import { Building2, Plus, Search, MapPin, Phone, Mail, Edit3, Trash2, CheckCircl
 import DataTable from '../../components/ui/DataTable';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import IconButton from '../../components/ui/IconButton';
 import { useToast } from '../../components/ui/Toast';
 import { centers, centerKeys } from '../../lib/catalog';
 
@@ -66,9 +67,9 @@ export default function Centers() {
 
   const toggleStatusMutation = useMutation({
     mutationFn: ({ id, isActive }) => centers.update(id, { isActive }),
-    onSuccess: () => {
-      toast.success('Status updated');
-      refresh();
+    onSuccess: async (_res, { isActive }) => {
+      await refresh();
+      toast.success(isActive ? 'Centre activated' : 'Centre deactivated');
     },
     onError: (err) => toast.error(err.message || 'Status update failed'),
   });
@@ -187,39 +188,38 @@ export default function Centers() {
     {
       key: 'actions',
       header: 'Actions',
-      width: '120px',
+      width: '156px',
       render: (row) => (
         <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-          <button
-            type="button"
-            title={row.isActive ? 'Deactivate' : 'Activate'}
+          <IconButton
+            icon={row.isActive ? XCircle : CheckCircle}
+            label={`${row.isActive ? 'Deactivate' : 'Activate'} ${row.name}`}
+            tone={row.isActive ? 'danger' : 'success'}
+            loading={toggleStatusMutation.isPending && toggleStatusMutation.variables?.id === row.id}
+            disabled={toggleStatusMutation.isPending || (deleteMutation.isPending && deleteMutation.variables === row.id)}
             onClick={() => toggleStatusMutation.mutate({ id: row.id, isActive: !row.isActive })}
-            className={`p-1.5 rounded transition ${
-              row.isActive ? 'text-[var(--color-success)] hover:bg-emerald-50' : 'text-muted hover:bg-neutral-100'
-            }`}
-          >
-            {row.isActive ? <CheckCircle className="size-4" /> : <XCircle className="size-4" />}
-          </button>
-          <button
-            type="button"
-            title="Edit Centre"
+          />
+          <IconButton
+            icon={Edit3}
+            label={`Edit ${row.name}`}
+            disabled={
+              (toggleStatusMutation.isPending && toggleStatusMutation.variables?.id === row.id) ||
+              (deleteMutation.isPending && deleteMutation.variables === row.id)
+            }
             onClick={() => openEditModal(row)}
-            className="p-1.5 rounded text-muted hover:text-strong hover:bg-[var(--surface-hover)] transition"
-          >
-            <Edit3 className="size-4" />
-          </button>
-          <button
-            type="button"
-            title="Delete Centre"
+          />
+          <IconButton
+            icon={Trash2}
+            label={`Remove ${row.name}`}
+            tone="danger"
+            loading={deleteMutation.isPending && deleteMutation.variables === row.id}
+            disabled={deleteMutation.isPending || (toggleStatusMutation.isPending && toggleStatusMutation.variables?.id === row.id)}
             onClick={() => {
               if (confirm(`Remove diagnostic centre "${row.name}"?`)) {
                 deleteMutation.mutate(row.id);
               }
             }}
-            className="p-1.5 rounded text-[var(--color-danger)] hover:bg-red-50 transition"
-          >
-            <Trash2 className="size-4" />
-          </button>
+          />
         </div>
       ),
     },

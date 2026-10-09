@@ -37,7 +37,7 @@ export default function ConfirmDialog({
         e.preventDefault();
         onCancel?.();
       }}
-      className="w-[min(420px,calc(100vw-2rem))] rounded-xl border p-0 backdrop:bg-black/50"
+      className="fixed left-1/2 top-1/2 m-0 max-h-[calc(100dvh-2rem)] w-[min(420px,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border p-0 backdrop:bg-black/50"
       style={{ background: 'var(--surface-card)', color: 'var(--text-base)' }}
     >
       <div className="p-5">

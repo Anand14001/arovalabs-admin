@@ -9,6 +9,7 @@ import Alert from '../../components/ui/Alert';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import RichTextEditor from '../../components/ui/RichTextEditor';
 import SectionForm from '../../components/content/SectionForm';
+import { PageSkeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
 import { content, contentKeys, CONTENT_STATUS } from '../../lib/catalog';
 
@@ -191,7 +192,7 @@ export default function Pages() {
         ))}
       </div>
 
-      {page.isLoading && <p className="py-12 text-center text-[13px] text-muted">Loading…</p>}
+      {page.isLoading && <PageSkeleton variant="editor" />}
 
       {current && (
         <>

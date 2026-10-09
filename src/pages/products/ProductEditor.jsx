@@ -8,6 +8,7 @@ import Alert from '../../components/ui/Alert';
 import RepeatableList from '../../components/ui/RepeatableList';
 import ImagePicker from '../../components/ui/ImagePicker';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import { PageSkeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
 import { products, categories, tags, keys, flattenCategories } from '../../lib/catalog';
 
@@ -244,7 +245,7 @@ export default function ProductEditor() {
   }, [form.regularPrice, form.salePrice]);
 
   if (!isNew && query.isLoading) {
-    return <p className="py-16 text-center text-[13px] text-muted">Loading…</p>;
+    return <PageSkeleton variant="editor" />;
   }
   if (!isNew && query.error) {
     return (

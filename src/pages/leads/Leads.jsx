@@ -151,11 +151,10 @@ export default function Leads() {
               key={tab.key}
               type="button"
               onClick={() => setFilters((f) => ({ ...f, status: tab.key, page: 1 }))}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition ${
-                isActive
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition ${isActive
                   ? 'bg-[var(--surface-sunken)] font-semibold text-strong'
                   : 'text-muted hover:bg-[var(--surface-hover)]'
-              }`}
+                }`}
             >
               {tab.label}
               {count !== undefined && (
@@ -243,7 +242,10 @@ export default function Leads() {
             {/* Message Body */}
             <div>
               <h3 className="text-[12px] font-semibold uppercase text-muted mb-1.5">Enquiry Content</h3>
-              <div className="rounded-lg border p-4 bg-white dark:bg-black/20 text-[13.5px] leading-relaxed whitespace-pre-wrap">
+              <div
+                className="rounded-lg border p-4 text-[13.5px] leading-relaxed whitespace-pre-wrap"
+                style={{ background: 'var(--surface-sunken)', color: 'var(--text-base)' }}
+              >
                 {selectedLead.message}
               </div>
             </div>
@@ -261,11 +263,10 @@ export default function Leads() {
                       type="button"
                       disabled={isCurrent || updateMutation.isPending}
                       onClick={() => updateMutation.mutate({ id: selectedLead.id, data: { status: s } })}
-                      className={`rounded-lg border px-2.5 py-1.5 text-center text-[12px] font-semibold transition ${
-                        isCurrent
+                      className={`rounded-lg border px-2.5 py-1.5 text-center text-[12px] font-semibold transition ${isCurrent
                           ? 'border-[var(--color-brand)] bg-[var(--color-brand)] text-white'
                           : 'hover:bg-[var(--surface-hover)] text-muted'
-                      }`}
+                        }`}
                     >
                       {meta.label}
                     </button>

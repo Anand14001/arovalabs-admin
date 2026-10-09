@@ -94,12 +94,14 @@ function UserMenu() {
 export default function AdminLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { pathname } = useLocation();
+  const { user } = useAuth();
+  const forcePasswordChange = Boolean(user?.mustChangePassword);
 
   // A navigation that leaves the drawer open covers the page you just opened.
   useEffect(() => setDrawerOpen(false), [pathname]);
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex h-dvh flex-col overflow-hidden">
       <header
         className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-3 border-b px-3 sm:px-5"
         style={{
@@ -107,18 +109,20 @@ export default function AdminLayout() {
           backdropFilter: 'blur(8px)',
         }}
       >
-          <button
-            type="button"
-            onClick={() => setDrawerOpen((v) => !v)}
-            aria-label={drawerOpen ? 'Close navigation' : 'Open navigation'}
-            className="btn btn-ghost -ml-1 px-2 lg:hidden"
-          >
-            {drawerOpen ? (
-              <X className="size-5" aria-hidden="true" />
-            ) : (
-              <Menu className="size-5" aria-hidden="true" />
-            )}
-          </button>
+          {!forcePasswordChange && (
+            <button
+              type="button"
+              onClick={() => setDrawerOpen((v) => !v)}
+              aria-label={drawerOpen ? 'Close navigation' : 'Open navigation'}
+              className="btn btn-ghost -ml-1 px-2 lg:hidden"
+            >
+              {drawerOpen ? (
+                <X className="size-5" aria-hidden="true" />
+              ) : (
+                <Menu className="size-5" aria-hidden="true" />
+              )}
+            </button>
+          )}
 
           <Link to="/" aria-label="Arova Labs admin home" className="flex shrink-0 items-center">
             <img src="/assets/arovalabs-logo.svg" alt="Arova Labs" className="h-8 w-auto max-w-[150px] object-contain object-left" />
@@ -131,14 +135,20 @@ export default function AdminLayout() {
 
       </header>
 
-      <div className="min-h-0 flex-1 lg:grid lg:grid-cols-[256px_minmax(0,1fr)]">
+      <div
+        className={`min-h-0 flex-1 overflow-hidden ${
+          forcePasswordChange ? '' : 'lg:grid lg:grid-cols-[256px_minmax(0,1fr)]'
+        }`}
+      >
         {/* Desktop sidebar begins beneath the navbar. */}
-        <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] border-r lg:block">
-          <Sidebar />
-        </aside>
+        {!forcePasswordChange && (
+          <aside className="hidden min-h-0 border-r lg:block">
+            <Sidebar />
+          </aside>
+        )}
 
         {/* Mobile drawer opens beneath the navbar. */}
-        {drawerOpen && (
+        {!forcePasswordChange && drawerOpen && (
           <div className="fixed inset-x-0 bottom-0 top-14 z-50 lg:hidden">
             <button
               type="button"
@@ -152,7 +162,7 @@ export default function AdminLayout() {
           </div>
         )}
 
-        <main className="min-w-0 p-4 sm:p-6">
+        <main className="min-h-0 min-w-0 overflow-y-auto overscroll-contain p-4 sm:p-6">
           <Outlet />
         </main>
       </div>
