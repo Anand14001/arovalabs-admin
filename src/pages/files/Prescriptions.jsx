@@ -4,6 +4,7 @@ import { Download, Link2, Search } from 'lucide-react';
 import DataTable, { Pagination } from '../../components/ui/DataTable';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import Select from '../../components/ui/Select';
 import { useToast } from '../../components/ui/Toast';
 import {
   prescriptions, fileKeys, PRESCRIPTION_STATUS, downloadPrivateFile,
@@ -173,18 +174,19 @@ export default function Prescriptions() {
           >
             <Link2 className="size-3.5" />
           </button>
-          <select
-            className="input w-auto px-1.5 py-1 text-[12px]"
+          <Select
+            className="w-auto min-w-[130px] px-2 py-1 text-[12px]"
             value={p.status}
+            loading={setStatus.isPending && setStatus.variables?.id === p.id}
+            disabled={setStatus.isPending && setStatus.variables?.id === p.id}
             onChange={(e) => setStatus.mutate({ id: p.id, status: e.target.value })}
             aria-label={`Status for ${p.patientName}`}
-          >
-            {Object.entries(PRESCRIPTION_STATUS).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v.label}
-              </option>
-            ))}
-          </select>
+            options={Object.entries(PRESCRIPTION_STATUS).map(([k, v]) => ({
+              value: k,
+              label: v.label,
+              tone: v.tone,
+            }))}
+          />
         </div>
       ),
     },

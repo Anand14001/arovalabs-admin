@@ -4,6 +4,7 @@ import {
   ChevronDown, ChevronUp, Eye, EyeOff, Lock, Plus, Save, Trash2, X,
 } from 'lucide-react';
 import Button from '../../components/ui/Button';
+import Select from '../../components/ui/Select';
 import Badge from '../../components/ui/Badge';
 import Alert from '../../components/ui/Alert';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
@@ -330,19 +331,21 @@ export default function Pages() {
                   <label className="label mb-1.5 block" htmlFor="newSection">
                     What kind of section?
                   </label>
-                  <select
+                  <Select
                     id="newSection"
-                    className="input"
+                    className="w-full"
                     value={newType}
                     onChange={(e) => setNewType(e.target.value)}
-                  >
-                    <option value="">Choose…</option>
-                    {(types.data?.items ?? []).map((t) => (
-                      <option key={t.type} value={t.type}>
-                        {t.label}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="Choose…"
+                    options={[
+                      { value: '', label: 'Choose…' },
+                      ...(types.data?.items ?? []).map((t) => ({
+                        value: t.type,
+                        label: t.label,
+                        description: t.description,
+                      })),
+                    ]}
+                  />
                   {newType && (
                     <p className="mt-1.5 text-[12px] text-muted">
                       {typeMap[newType]?.description}

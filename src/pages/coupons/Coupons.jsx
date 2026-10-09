@@ -4,6 +4,7 @@ import { BadgePercent, Plus, Search, Tag, Trash2, Edit3, CheckCircle, XCircle } 
 import DataTable, { Pagination } from '../../components/ui/DataTable';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import Select from '../../components/ui/Select';
 import IconButton from '../../components/ui/IconButton';
 import { useToast } from '../../components/ui/Toast';
 import { coupons, couponKeys, COUPON_STATUS } from '../../lib/catalog';
@@ -347,14 +348,16 @@ export default function Coupons() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[12.5px] font-semibold text-strong mb-1">Discount Type *</label>
-                  <select
+                  <Select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="input w-full text-[13px]"
-                  >
-                    <option value="PERCENT">Percentage (%)</option>
-                    <option value="FIXED">Flat Rupee Amount (₹)</option>
-                  </select>
+                    className="w-full text-[13px]"
+                    aria-label="Discount Type"
+                    options={[
+                      { value: 'PERCENT', label: 'Percentage (%)' },
+                      { value: 'FIXED', label: 'Flat Rupee Amount (₹)' },
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block text-[12.5px] font-semibold text-strong mb-1">

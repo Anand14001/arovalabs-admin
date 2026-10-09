@@ -4,6 +4,7 @@ import { Building2, Plus, Search, MapPin, Phone, Mail, Edit3, Trash2, CheckCircl
 import DataTable from '../../components/ui/DataTable';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import Select from '../../components/ui/Select';
 import IconButton from '../../components/ui/IconButton';
 import { useToast } from '../../components/ui/Toast';
 import { centers, centerKeys } from '../../lib/catalog';
@@ -270,15 +271,17 @@ export default function Centers() {
           />
         </div>
 
-        <select
+        <Select
           value={filters.isActive}
           onChange={(e) => setFilters({ ...filters, isActive: e.target.value })}
-          className="input text-[13px] w-36"
-        >
-          <option value="all">All Centres</option>
-          <option value="true">Active Only</option>
-          <option value="false">Inactive Only</option>
-        </select>
+          className="text-[13px] w-36"
+          aria-label="Filter by status"
+          options={[
+            { value: 'all', label: 'All Centres' },
+            { value: 'true', label: 'Active Only' },
+            { value: 'false', label: 'Inactive Only' },
+          ]}
+        />
       </div>
 
       {/* Table */}

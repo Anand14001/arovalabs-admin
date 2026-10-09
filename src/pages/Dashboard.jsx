@@ -6,6 +6,7 @@ import { api } from '../lib/api';
 import { formatPaise } from '../lib/catalog';
 import { useAuth } from '../context/AuthContext';
 import { Skeleton } from '../components/ui/Skeleton';
+import Select from '../components/ui/Select';
 
 const iso = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 const periods = { '7d': 7, '30d': 30, '90d': 90 };
@@ -45,7 +46,17 @@ export default function Dashboard() {
     <div className="mx-auto max-w-6xl">
       <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div><h1 className="text-[20px]">Welcome back, {firstName}</h1><p className="mt-0.5 text-[13px] text-muted">A current view of sales and lab operations.</p></div>
-        <select aria-label="Analytics period" className="input w-auto" value={period} onChange={(e) => setPeriod(e.target.value)}><option value="7d">Last 7 days</option><option value="30d">Last 30 days</option><option value="90d">Last 90 days</option></select>
+        <Select
+          aria-label="Analytics period"
+          className="w-auto min-w-[150px]"
+          value={period}
+          onChange={(e) => setPeriod(e.target.value)}
+          options={[
+            { value: '7d', label: 'Last 7 days' },
+            { value: '30d', label: 'Last 30 days' },
+            { value: '90d', label: 'Last 90 days' },
+          ]}
+        />
       </header>
 
       {analytics.isLoading ? (

@@ -9,6 +9,8 @@ import Button from '../../components/ui/Button';
 import Alert from '../../components/ui/Alert';
 import { PageSkeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
+import StatusSelect from '../../components/ui/StatusSelect';
+import Select from '../../components/ui/Select';
 import {
   orders, orderKeys, collectionOptions, formatPaise, ORDER_STATUS, PAYMENT_STATUS,
 } from '../../lib/catalog';
@@ -222,27 +224,23 @@ export default function OrderDetail() {
           className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border px-3 py-2.5"
           style={{ background: 'var(--surface-sunken)' }}
         >
-          <label htmlFor="order-status" className="text-[12.5px] font-medium text-muted">
+          <label id="order-status-label" htmlFor="order-status-trigger" className="text-[12.5px] font-medium text-muted">
             Update order status
           </label>
-          <select
+          <StatusSelect
             id="order-status"
-            className="input w-auto min-w-52"
+            labelId="order-status-label"
+            options={forward}
+            statusMeta={ORDER_STATUS}
             value={advance.isPending ? advance.variables?.status ?? statusChoice : statusChoice}
             disabled={advance.isPending}
-            onChange={(e) => {
-              const nextStatus = e.target.value;
+            isPending={advance.isPending}
+            placeholder="Choose next status…"
+            onChange={(nextStatus) => {
               setStatusChoice(nextStatus);
               if (nextStatus) advance.mutate({ status: nextStatus });
             }}
-          >
-            <option value="">Choose next status…</option>
-            {forward.map((nextStatus) => (
-              <option key={nextStatus} value={nextStatus}>
-                {ORDER_STATUS[nextStatus]?.label ?? nextStatus}
-              </option>
-            ))}
-          </select>
+          />
           {advance.isPending && (
             <span role="status" aria-live="polite" className="inline-flex items-center gap-2 text-[12.5px] text-muted">
               <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
@@ -595,19 +593,20 @@ export default function OrderDetail() {
             />
 
             <label className="label mb-1.5 mt-3 block" htmlFor="slotWindow">Time</label>
-            <select
+            <Select
               id="slotWindow"
-              className="input"
+              className="w-full"
               value={slotWindow}
               onChange={(e) => setSlotWindow(e.target.value)}
-            >
-              <option value="">Choose…</option>
-              {(windows.data?.windows ?? []).map((w) => (
-                <option key={w.id} value={w.id}>
-                  {w.label} ({w.start}–{w.end})
-                </option>
-              ))}
-            </select>
+              placeholder="Choose…"
+              options={[
+                { value: '', label: 'Choose…' },
+                ...(windows.data?.windows ?? []).map((w) => ({
+                  value: w.id,
+                  label: `${w.label} (${w.start}–${w.end})`,
+                })),
+              ]}
+            />
             {/* No notice-period restriction here, unlike checkout: an admin on
                 the phone may well be moving a collection to this afternoon. */}
             <p className="mt-1.5 text-[12px] text-muted">

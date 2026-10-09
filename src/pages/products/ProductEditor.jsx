@@ -8,6 +8,7 @@ import Alert from '../../components/ui/Alert';
 import RepeatableList from '../../components/ui/RepeatableList';
 import ImagePicker from '../../components/ui/ImagePicker';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import Select from '../../components/ui/Select';
 import { PageSkeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
 import { products, categories, tags, keys, flattenCategories } from '../../lib/catalog';
@@ -358,28 +359,30 @@ export default function ProductEditor() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="label mb-1.5" htmlFor="type">Type</label>
-                    <select
+                    <Select
                       id="type"
-                      className="input"
+                      className="w-full"
                       value={form.type}
                       onChange={(e) => set({ type: e.target.value })}
-                    >
-                      <option value="TEST">Test</option>
-                      <option value="PACKAGE">Package</option>
-                    </select>
+                      options={[
+                        { value: 'TEST', label: 'Test' },
+                        { value: 'PACKAGE', label: 'Package' },
+                      ]}
+                    />
                   </div>
                   <div>
                     <label className="label mb-1.5" htmlFor="status">Status</label>
-                    <select
+                    <Select
                       id="status"
-                      className="input"
+                      className="w-full"
                       value={form.status}
                       onChange={(e) => set({ status: e.target.value })}
-                    >
-                      <option value="DRAFT">Draft</option>
-                      <option value="PUBLISHED">Published</option>
-                      <option value="ARCHIVED">Archived</option>
-                    </select>
+                      options={[
+                        { value: 'DRAFT', label: 'Draft', tone: 'warning' },
+                        { value: 'PUBLISHED', label: 'Published', tone: 'success' },
+                        { value: 'ARCHIVED', label: 'Archived', tone: 'neutral' },
+                      ]}
+                    />
                   </div>
                 </div>
               </div>

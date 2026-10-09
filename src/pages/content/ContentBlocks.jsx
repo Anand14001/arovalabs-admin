@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Save } from 'lucide-react';
 import Button from '../../components/ui/Button';
+import Select from '../../components/ui/Select';
 import RepeatableList from '../../components/ui/RepeatableList';
 import { PageSkeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
@@ -105,18 +106,16 @@ export default function ContentBlocks() {
                   value={item.question ?? ''}
                   onChange={(e) => update({ ...item, question: e.target.value })}
                 />
-                <select
-                  className="input"
+                <Select
+                  className="w-full text-[13px]"
                   aria-label="Where it appears"
                   value={item.group ?? 'GENERAL'}
                   onChange={(e) => update({ ...item, group: e.target.value })}
-                >
-                  {GROUPS.map((g) => (
-                    <option key={g.key} value={g.key}>
-                      {g.label}
-                    </option>
-                  ))}
-                </select>
+                  options={GROUPS.map((g) => ({
+                    value: g.key,
+                    label: g.label,
+                  }))}
+                />
               </div>
               <textarea
                 rows={2}

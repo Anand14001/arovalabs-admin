@@ -5,6 +5,7 @@ import { Plus, Search } from 'lucide-react';
 import DataTable, { Pagination } from '../../components/ui/DataTable';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import Select from '../../components/ui/Select';
 import { content, contentKeys, CONTENT_STATUS } from '../../lib/catalog';
 
 const TABS = [
@@ -126,19 +127,19 @@ export default function PostList() {
             aria-label="Search articles"
           />
         </div>
-        <select
-          className="input w-auto min-w-0"
+        <Select
+          className="w-auto min-w-[170px]"
           value={filters.category}
           onChange={(e) => setFilter({ category: e.target.value })}
           aria-label="Filter by category"
-        >
-          <option value="">All categories</option>
-          {(categories.data?.items ?? []).map((c) => (
-            <option key={c.id} value={c.slug}>
-              {c.name} ({c.postCount})
-            </option>
-          ))}
-        </select>
+          options={[
+            { value: '', label: 'All categories' },
+            ...(categories.data?.items ?? []).map((c) => ({
+              value: c.slug,
+              label: `${c.name} (${c.postCount})`,
+            })),
+          ]}
+        />
       </div>
 
       <DataTable

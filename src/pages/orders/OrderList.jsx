@@ -5,6 +5,7 @@ import { Download, Search } from 'lucide-react';
 import DataTable, { Pagination } from '../../components/ui/DataTable';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import Select from '../../components/ui/Select';
 import { useToast } from '../../components/ui/Toast';
 import { orders, orderKeys, formatPaise, ORDER_STATUS, PAYMENT_STATUS } from '../../lib/catalog';
 import { BASE_URL, getAccessToken } from '../../lib/api';
@@ -208,16 +209,17 @@ export default function OrderList() {
           />
         </div>
 
-        <select
-          className="input w-auto min-w-0"
+        <Select
+          className="w-auto min-w-[170px]"
           value={filters.collectionType}
           onChange={(e) => setFilter({ collectionType: e.target.value })}
           aria-label="Filter by collection type"
-        >
-          <option value="">Home &amp; walk-in</option>
-          <option value="HOME">Home collection</option>
-          <option value="WALK_IN">Walk-in</option>
-        </select>
+          options={[
+            { value: '', label: 'Home & walk-in' },
+            { value: 'HOME', label: 'Home collection' },
+            { value: 'WALK_IN', label: 'Walk-in' },
+          ]}
+        />
 
         {/*
           Filters on the requested collection date — "what are we collecting

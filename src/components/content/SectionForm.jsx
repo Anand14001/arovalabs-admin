@@ -8,6 +8,7 @@
  */
 
 import Field from '../ui/Field';
+import Select from '../ui/Select';
 import RepeatableList from '../ui/RepeatableList';
 import ImagePicker from '../ui/ImagePicker';
 import RichTextEditor from '../ui/RichTextEditor';
@@ -141,16 +142,17 @@ function Scalar({ field, value, onChange, error }) {
         <div>
           <p className="label mb-1.5">{labelFor(field)}</p>
           <div className="grid gap-2 sm:grid-cols-2">
-            <select
-              className="input"
+            <Select
+              className="w-full"
               aria-label="Product type"
               value={value?.type ?? ''}
               onChange={(e) => onChange({ ...(value ?? { mode: 'query', limit: 8 }), type: e.target.value || null })}
-            >
-              <option value="">Tests and packages</option>
-              <option value="TEST">Tests only</option>
-              <option value="PACKAGE">Packages only</option>
-            </select>
+              options={[
+                { value: '', label: 'Tests and packages' },
+                { value: 'TEST', label: 'Tests only' },
+                { value: 'PACKAGE', label: 'Packages only' },
+              ]}
+            />
             <input
               className="input"
               type="number"

@@ -101,7 +101,7 @@ export default function AdminLayout() {
   useEffect(() => setDrawerOpen(false), [pathname]);
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden">
+    <div className="flex min-h-dvh flex-col lg:h-dvh lg:overflow-hidden">
       <header
         className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-3 border-b px-3 sm:px-5"
         style={{
@@ -136,7 +136,7 @@ export default function AdminLayout() {
       </header>
 
       <div
-        className={`min-h-0 flex-1 overflow-hidden ${
+        className={`flex-1 lg:min-h-0 lg:overflow-hidden ${
           forcePasswordChange ? '' : 'lg:grid lg:grid-cols-[256px_minmax(0,1fr)]'
         }`}
       >
@@ -162,7 +162,7 @@ export default function AdminLayout() {
           </div>
         )}
 
-        <main className="min-h-0 min-w-0 overflow-y-auto overscroll-contain p-4 sm:p-6">
+        <main className="min-w-0 p-4 sm:p-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain">
           <Outlet />
         </main>
       </div>

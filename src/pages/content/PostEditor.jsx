@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, ExternalLink, History, Save, Trash2 } from 'lucide-react';
 import Field from '../../components/ui/Field';
 import Button from '../../components/ui/Button';
+import Select from '../../components/ui/Select';
 import Alert from '../../components/ui/Alert';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import RichTextEditor from '../../components/ui/RichTextEditor';
@@ -334,31 +335,34 @@ export default function PostEditor() {
             <div className="mt-3 space-y-3">
               <div>
                 <label className="label mb-1.5 block" htmlFor="status">Status</label>
-                <select
+                <Select
                   id="status"
-                  className="input"
+                  className="w-full"
                   value={form.status}
                   onChange={(e) => set({ status: e.target.value })}
-                >
-                  {Object.entries(CONTENT_STATUS).map(([k, v]) => (
-                    <option key={k} value={k}>{v.label}</option>
-                  ))}
-                </select>
+                  options={Object.entries(CONTENT_STATUS).map(([k, v]) => ({
+                    value: k,
+                    label: v.label,
+                    tone: v.tone,
+                  }))}
+                />
               </div>
 
               <div>
                 <label className="label mb-1.5 block" htmlFor="category">Category</label>
-                <select
+                <Select
                   id="category"
-                  className="input"
+                  className="w-full"
                   value={form.categoryId}
                   onChange={(e) => set({ categoryId: e.target.value })}
-                >
-                  <option value="">No category</option>
-                  {(categories.data?.items ?? []).map((c) => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
+                  options={[
+                    { value: '', label: 'No category' },
+                    ...(categories.data?.items ?? []).map((c) => ({
+                      value: c.id,
+                      label: c.name,
+                    })),
+                  ]}
+                />
               </div>
 
               <Field

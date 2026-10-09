@@ -7,6 +7,7 @@ import Badge, { StatusBadge } from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import IconButton from '../../components/ui/IconButton';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import Select from '../../components/ui/Select';
 import { useToast } from '../../components/ui/Toast';
 import { products, categories, keys, flattenCategories, formatPaise } from '../../lib/catalog';
 
@@ -200,56 +201,54 @@ export default function ProductList() {
           />
         </div>
 
-        <select
-          className="input w-auto"
+        <Select
+          className="w-auto min-w-[130px]"
           value={filters.type}
           onChange={(e) => setFilter({ type: e.target.value })}
           aria-label="Filter by type"
-        >
-          <option value="">All types</option>
-          <option value="TEST">Tests</option>
-          <option value="PACKAGE">Packages</option>
-        </select>
+          options={[
+            { value: '', label: 'All types' },
+            { value: 'TEST', label: 'Tests' },
+            { value: 'PACKAGE', label: 'Packages' },
+          ]}
+        />
 
-        <select
-          className="input w-auto"
+        <Select
+          className="w-auto min-w-[140px]"
           value={filters.status}
           onChange={(e) => setFilter({ status: e.target.value })}
           aria-label="Filter by status"
-        >
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {s ? s.charAt(0) + s.slice(1).toLowerCase() : 'All statuses'}
-            </option>
-          ))}
-        </select>
+          options={STATUSES.map((s) => ({
+            value: s,
+            label: s ? s.charAt(0) + s.slice(1).toLowerCase() : 'All statuses',
+            tone: s === 'PUBLISHED' ? 'success' : s === 'DRAFT' ? 'warning' : s === 'ARCHIVED' ? 'neutral' : undefined,
+          }))}
+        />
 
-        <select
-          className="input w-auto max-w-[200px]"
+        <Select
+          className="w-auto min-w-[160px] max-w-[200px]"
           value={filters.category}
           onChange={(e) => setFilter({ category: e.target.value })}
           aria-label="Filter by category"
-        >
-          <option value="">All categories</option>
-          {categoryOptions.map((c) => (
-            <option key={c.id} value={c.path}>
-              {c.label}
-            </option>
-          ))}
-        </select>
+          options={[
+            { value: '', label: 'All categories' },
+            ...categoryOptions.map((c) => ({ value: c.path, label: c.label })),
+          ]}
+        />
 
-        <select
-          className="input w-auto"
+        <Select
+          className="w-auto min-w-[150px]"
           value={filters.orderby}
           onChange={(e) => setFilter({ orderby: e.target.value })}
           aria-label="Sort"
-        >
-          <option value="menu_order">Custom order</option>
-          <option value="date">Newest</option>
-          <option value="title">A–Z</option>
-          <option value="price">Price: low to high</option>
-          <option value="price-desc">Price: high to low</option>
-        </select>
+          options={[
+            { value: 'menu_order', label: 'Custom order' },
+            { value: 'date', label: 'Newest' },
+            { value: 'title', label: 'A–Z' },
+            { value: 'price', label: 'Price: low to high' },
+            { value: 'price-desc', label: 'Price: high to low' },
+          ]}
+        />
       </div>
 
       {duplicate.isPending && (

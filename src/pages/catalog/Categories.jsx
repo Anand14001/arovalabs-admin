@@ -5,6 +5,7 @@ import Button from '../../components/ui/Button';
 import Field from '../../components/ui/Field';
 import Alert from '../../components/ui/Alert';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import Select from '../../components/ui/Select';
 import IconButton from '../../components/ui/IconButton';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
@@ -205,9 +206,9 @@ export default function Categories() {
               />
               <div>
                 <label className="label mb-1.5" htmlFor="parent">Parent</label>
-                <select
+                <Select
                   id="parent"
-                  className="input"
+                  className="w-full"
                   value={form.parentId ?? ''}
                   onChange={(e) =>
                     setForm((f) => ({
@@ -215,14 +216,14 @@ export default function Categories() {
                       parentId: e.target.value ? Number(e.target.value) : null,
                     }))
                   }
-                >
-                  <option value="">No parent (top level)</option>
-                  {parentOptions.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
+                  options={[
+                    { value: '', label: 'No parent (top level)' },
+                    ...parentOptions.map((c) => ({
+                      value: c.id,
+                      label: c.label,
+                    })),
+                  ]}
+                />
               </div>
               <label className="flex items-center gap-2 text-[13px]">
                 <input
